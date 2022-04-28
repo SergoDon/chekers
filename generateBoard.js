@@ -39,7 +39,7 @@
 // let genBoard = generateBoard();
 
 
-function getChekersBoard() {
+function generateBoard() {
 
    let blackColor = `rgba(0,0,0,1)`
    let whiteColor = `rgba(255,255,255,1)`
@@ -95,7 +95,6 @@ let board = arrLetters.map( (values, index, arr) => {
 return board
 }
 
-let getBoard = getChekersBoard();
-
+let getBoard = generateBoard();
 
 console.log(getBoard)
