@@ -58,6 +58,34 @@ const genBoard = generateChekersBoard();
 console.log(genBoard)
 
 
+function genletNumLine (chekenBoard, divType) {
+   const line = document.createElement('div')
+   
+   chekenBoard.forEach((element, indexCb) => {
+      
+      const lineElement = document.createElement('div')
+      line.appendChild(lineElement)
+     
+      if(divType === 'letter'){
+         line.classList.add('letterLine')
+         lineElement.classList.add('letters')
+         element.forEach( (elementItem) => {
+            lineElement.innerText = elementItem.x
+         })
+      } 
+      else { 
+         lineElement.innerText = chekenBoard.length-indexCb
+         line.classList.add('nmber')
+         lineElement.classList.add('numberLine')
+      }
+   })
+   return line
+}
+
+function cellClick() {
+   console.log('123')
+}
+
 function renderBoard(chekenBoard) {
 
    let body = document.getElementById('chekersBody')
@@ -79,29 +107,7 @@ function renderBoard(chekenBoard) {
    conteiner.appendChild(genletNumLine(chekenBoard, 'letter'))
    
 
-   function genletNumLine (chekenBoard, divType) {
-      const line = document.createElement('div')
-      
-      chekenBoard.forEach((element, indexCb) => {
-         
-         const lineElement = document.createElement('div')
-         line.appendChild(lineElement)
-        
-         if(divType === 'letter'){
-            line.classList.add('letterLine')
-            lineElement.classList.add('letters')
-            element.forEach( (elementItem) => {
-               lineElement.innerText = elementItem.x
-            })
-         } 
-         else { 
-            lineElement.innerText = chekenBoard.length-indexCb
-            line.classList.add('nmber')
-            lineElement.classList.add('numberLine')
-         }
-      })
-      return line
-   }
+   
 
    chekenBoard.forEach((item) => {
 
@@ -115,7 +121,8 @@ function renderBoard(chekenBoard) {
          const cell = document.createElement('div')      
          cell.classList = 'itemCell'
          cell.style.backgroundColor = colorCell
-        
+         cell.onclick = () => cellClick ()
+
          line.appendChild(cell)
 
          if(isExist){

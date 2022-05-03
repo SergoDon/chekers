@@ -10,6 +10,7 @@ body{
     justify-content: space-between;
     height: 850px;
     width: 850px;
+    border: 3px solid rgba(0,0,0,1);
 }
 
 .letters{
@@ -26,7 +27,7 @@ body{
     flex-direction: row; 
     height: 800px;
     width: 850px;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .number{
@@ -64,7 +65,7 @@ body{
     justify-content: center;
     height: 800px;
     width: 800px;
-    border: 3px solid rgba(0,0,0,1);
+    border: 2px solid rgba(0,0,0,1);
 }
 
 .borderLine{
