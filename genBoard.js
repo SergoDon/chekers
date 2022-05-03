@@ -104,21 +104,23 @@ function renderBoard(chekenBoard) {
    }
 
    chekenBoard.forEach((item) => {
-        
+
       const line = document.createElement('div')
       line.classList.add('borderLine')
 
       item.forEach((itemCell) => {
 
+         const {colorCell, cheker: {isExist, colorCheker}} = itemCell
+
          const cell = document.createElement('div')      
          cell.classList = 'itemCell'
-         cell.style.backgroundColor = itemCell.colorCell
+         cell.style.backgroundColor = colorCell
         
          line.appendChild(cell)
 
-         if(itemCell.cheker.isExist){
+         if(isExist){
             const chekerOnItem = document.createElement('div')
-            chekerOnItem.style.background = itemCell.cheker.colorCheker
+            chekerOnItem.style.background = colorCheker
             chekerOnItem.classList.add('cheker')
             cell.appendChild(chekerOnItem)
          } 
