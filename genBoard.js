@@ -113,7 +113,7 @@ function checkingCorrectMove (startCell, nextCell) {
    }
 
    if(colorCheker === checkerRedColor) {
-      console.log(startCell)
+      //console.log(startCell)
       if ( (nextChekerY - startChekerY) > 1 || (nextChekerY - startChekerY) < 0) return true
       if ( (startChekerX - nextChekerX) > 1 || (nextChekerX - startChekerX) > 1 ) return true
    }
@@ -205,7 +205,8 @@ function cellClick(id) {
 
          history(curentUser.userId, curentUser.userName, elementInMemory.id, selectedElement.id)
 
-         elUserHistory[0].innerText = `${curentUser.userName}: ${curentUserHistor(curentUser)}`
+        //Version 1 - elUserHistory[0].innerText = `${curentUser.userName}: ${curentUserHistor(curentUser)}`
+        elUserHistory[0].innerText = `${curentUserHistor(curentUser)}`
       }  
    } 
 }
@@ -321,12 +322,14 @@ function renderGameHistory(){
 }
 
 function curentUserHistor(curentUser){
-   let text = ""
-   gameHistory.forEach( (qwe) => {
-      if (qwe.userId === curentUser.userId){
-         text = text + '|' + qwe.idStartCell + '>>>' + qwe.idFinishCell + '|'
-      }
-   })
+   //Version 1 -
+   //let text = "" 
+   // let arr = gameHistory.filter( (item) => item.userId === curentUser.userId )
+   // arr.map((item) => text =  text + '|' + item.idStartCell + '>>>' + item.idFinishCell + '|')
+   
+   let text = gameHistory.reduce( (uccum, item) => {
+     return uccum + item.userName + ':' +'|' + item.idStartCell + '>>>' + item.idFinishCell + '| '  
+   },'')
    return text
 }
   
