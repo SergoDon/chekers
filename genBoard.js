@@ -456,6 +456,7 @@ function cancelMove(){
    startCellOption.cheker.colorCheker = curetnUser().chekerColor
    startCellOption.cheker.userId = curentUserid
    finishCellOption.cheker.userId = null
+   finishCellOption.cheker.isExist = false
 
    const [firstClildNod] = finishCell.childNodes
    if(firstClildNod){
