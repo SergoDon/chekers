@@ -13,6 +13,8 @@ let elementInMemory = null
 let gameHistory = []//{userId, idFirstCell, idNextCell}
 let users = [] //{ username, userId, checkerColor }
 let userId = null
+let cellChekerOnMemory = []
+let curentElemenId = null
 
 const genBoard = generateChekersBoard();
 
@@ -75,7 +77,7 @@ let line = arrLetters.map( (values, index, arr) => {
 return line;
 }
 
-function genletNumLine (chekenBoard, divType) {
+function genletNumLine(chekenBoard, divType) {
    
    const line = document.createElement('div')
    
@@ -100,12 +102,74 @@ function genletNumLine (chekenBoard, divType) {
    return line
 }
 
-function checkingCorrectMove (startCell, nextCell) {
+function attackCheker(nextCell) {
    
-   const {x: nextChekerX, y: nextChekerY} = nextCell//координаты ячейки на которую кликнули
-   const {cheker: { colorCheker }, x: startChekerX, y: startChekerY } = startCell//цевет шашки которой ходим
+   const selectCell = genBoard.flat().find( (item) => item.id === curentElemenId)
+   const {x: selectChekerX, y: selectChekerY, id: selectChekerId} = selectCell
+   const {x: nextChekerX, y: nextChekerY, id: nextChekerId} = nextCell
+   
+   
+   const selectElement = document.getElementById(selectChekerId)
+   const selectCheker = selectElement.firstChild
+   const nextElement = document.getElementById(nextChekerId)
+   const nextElementCheker = document.createElement('div')
+   
+   nextElementCheker.classList.add('cheker')
+   nextElementCheker.style.backgroundColor = selectCell.cheker.colorCheker
+
+   let vragCell = genBoard.flat().find( (item) => {
+     
+      if(selectCell.cheker.colorCheker === checkerRedColor) {   
+         if ( ((item.x === selectChekerX - 1) && (item.y === selectChekerY + 1) &&
+                item.cheker.userId && item.cheker.userId !== userId) || 
+              ((item.x === selectChekerX + 1) && (item.y === selectChekerY + 1) && 
+              item.cheker.userId && item.cheker.userId !== userId)) {
+          return item
+         }
+      }
+
+      if(selectCell.cheker.colorCheker === checkerGrayColor) {   
+         if ( ((item.x === selectChekerX - 1) && (item.y === selectChekerY - 1) &&
+                item.cheker.userId && item.cheker.userId !== userId) || 
+              ((item.x === selectChekerX - 1) && (item.y === selectChekerY + 1) && 
+                item.cheker.userId && item.cheker.userId !== userId) ){
+          return item
+         }
+      }
+   })
+   
+   if (vragCell) {
+      const vragElement = document.getElementById(vragCell.id)
+      const vragCheker = vragElement.firstChild
+      if (vragCheker) {
+         vragElement.removeChild(vragCheker)
+         nextElement.appendChild(nextElementCheker)
+         nextCell.cheker.isExist = null
+         nextCell.cheker.userId = userId
+         nextCell.cheker.colorCheker = selectCell.cheker.colorCheker
+         selectElement.removeChild(selectCheker)
+         selectElement.style.backgroundColor = blackColor
+      }
+      vragCell = null
+      console.log('selectCheker 1',selectCell)
+      console.log('nextCell 1',nextCell)
+      console.log('vragCell 1',vragCell)
+   }
+      console.log('selectCheker',selectCell)
+      console.log('nextCell',nextCell)
+      console.log('vragCell',vragCell)
 
    
+   
+   
+}
+
+
+function checkingCorrectMove (startCell, nextCell) {
+   
+   const {x: nextChekerX, y: nextChekerY} = nextCell
+   const {cheker: { colorCheker }, x: startChekerX, y: startChekerY } = startCell//цевет шашки которой ходим
+
    
    if(colorCheker === checkerGrayColor) {
       if ( (startChekerY - nextChekerY) > 1 || (startChekerY - nextChekerY) < 0) return true
@@ -152,7 +216,8 @@ function cellClick(id) {
             cellInMemory = null
             return
          } 
-
+         curentElemenId = cellInMemory.id
+         console.log(curentElemenId)
          cellInMemory.cheker.isSelected = true
          selectedElement.style.backgroundColor = checkerYellowBg
       } 
@@ -175,13 +240,16 @@ function cellClick(id) {
 
    else if (selectedСell.isDisable && cellInMemory) {
       if(cellInMemory.cheker.isSelected && !divCheker) {   
-         if (checkingCorrectMove (cellInMemory, selectedСell)) return
+         
+         attackCheker(selectedСell)
+         if (checkingCorrectMove (cellInMemory, selectedСell)) return 0
          
          selectedСell.cheker.colorCheker = cellInMemory.cheker.colorCheker
          
          const elUserHistory = document.getElementsByName('gameHistory')
          const checker = document.createElement('div')
          const childElementInMemory = elementInMemory.childNodes[0]
+         const historyText = elUserHistory[0].childNodes[0]
 
          checker.classList.add('cheker')
          checker.style.backgroundColor = selectedСell.cheker.colorCheker
@@ -190,6 +258,7 @@ function cellClick(id) {
          cellInMemory.cheker.isSelected = false
          selectedСell.cheker.userId = curentUser.userId
          cellInMemory.cheker.userId = null
+         selectedСell.isExist = null
 
          selectedElement.appendChild(checker)
          elementInMemory.removeChild(childElementInMemory)
@@ -200,13 +269,12 @@ function cellClick(id) {
 
          userLine[0].innerText = curetnUser().userName
          userLine[0].setAttribute('style', `color:${curetnUser().chekerColor}`)
-         //elUserHistory[0].innerText = 
+         
       
 
          history(curentUser.userId, curentUser.userName, elementInMemory.id, selectedElement.id)
-
         //Version 1 - elUserHistory[0].innerText = `${curentUser.userName}: ${curentUserHistor(curentUser)}`
-        elUserHistory[0].innerText = `${curentUserHistor(curentUser)}`
+        historyText.innerText = `${curentUserHistor(curentUser)}`
       }  
    } 
 }
@@ -315,10 +383,18 @@ function history(userId, userName, idStartCell, idFinishCell){
 function renderGameHistory(){
    const element = document.getElementById('chekersBody')
    const elUserHistory = document.createElement('div')
+   const historyText = document.createElement('div')
+   
    elUserHistory.classList.add('elUserHistory')
-   elUserHistory.setAttribute('name', 'gameHistory' )
+   historyText.classList.add('historyText')
+
+   elUserHistory.setAttribute('name', 'gameHistory')
+   elUserHistory.setAttribute('id', 'gameHistory')
+   historyText.setAttribute('name', 'historyText')
 
    element.appendChild(elUserHistory)
+   elUserHistory.appendChild(historyText)
+   renderButton()
 }
 
 function curentUserHistor(curentUser){
@@ -332,7 +408,48 @@ function curentUserHistor(curentUser){
    },'')
    return text
 }
-  
+
+function renderButton(){
+   const historyLine = document.getElementById('gameHistory')
+   const button = document.createElement('button')
+
+   button.classList.add('button')
+   button.setAttribute('id', 'btn')
+   button.setAttribute('onclick', 'cancelMove(genBoard)')
+   //button.setAttribute('tupe', 'button')
+   button.innerText = 'Отмена'
+
+   historyLine.appendChild(button)
+}
+
+function cancelMove(){
+   if(!gameHistory.length) return
+   let {idStartCell: idStart, idFinishCell: idFinish, userId: curentUserid} =  gameHistory.pop()
+   const board = genBoard.flat()
+
+   const startCellOption = board.find( ({id}) => id === idStart )
+   const finishCellOption = board.find( ({id}) => id === idFinish )
+   let startCell = document.getElementById(idStart)
+   let finishCell = document.getElementById(idFinish)
+   let historyText = document.getElementsByName('historyText')
+   const userLine = document.getElementsByClassName('curentUser')
+
+   const checker = document.createElement('div')
+   checker.classList.add('cheker')
+   checker.style.backgroundColor = startCellOption.cheker.colorCheker
+   userId = curentUserid
+
+   startCellOption.cheker.userId = curentUserid
+   finishCellOption.cheker.userId = null
+
+   const [firstClildNod] = finishCell.childNodes
+   finishCell.removeChild(firstClildNod)
+   startCell.appendChild(checker)
+
+   userLine[0].innerText = curetnUser().userName
+   historyText[0].innerText = `${curentUserHistor()}`
+}
+
 
 
 

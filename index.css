@@ -116,9 +116,30 @@ body{
     height: 50px;
     width: 850px;
     align-items: center;
-    flex-direction: unset;
+    justify-content: space-between;
+    font-size: 20px;
+    font-style: oblique;
+    border: 2px solid rgb(0,0,0,1);
+}
+
+.historyText{
+    display: flex;
+    height: 50px;
+    width: 750px;
+    align-items: center;
     justify-content: flex-start;
     font-size: 20px;
     font-style: oblique;
+}
+
+.button{
+    display: flex;
+    height: 40px;
+    width: 100px;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 20px;
+    font-style: oblique;
+    margin: 5px;
     border: 2px solid rgb(0,0,0,1);
 }
