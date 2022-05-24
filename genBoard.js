@@ -14,6 +14,8 @@ let gameHistory = []//{userId, idFirstCell, idNextCell}
 let users = [] //{ username, userId, checkerColor }
 let userId = null
 let brokenСheckers = []//{brokenChecker}
+let vragCells = []
+
 
 const genBoard = generateChekersBoard();
 
@@ -108,67 +110,110 @@ function attackCheker(startCell, nextCell, boardInArr) {
    const {x: nextChekerX, y: nextChekerY, id: nextCellId} = nextCell
    const curentUser = curetnUser()
 
-   let vragCell = boardInArr.find( item => {
-      if(curentUser.chekerColor === checkerRedColor)
-      {
-         if(nextChekerX === startChekerX + 2 && nextChekerY === startChekerY + 2){
-            if(item.x === startChekerX + 1 && item.y === startChekerY + 1) return item
+   const vragCellSearch = (indOne, indTwo) => {
+   
+      let vrag = (boardInArr.find( item => {
+      if(curentUser.chekerColor === checkerRedColor){
+         if(nextChekerX === startChekerX + indTwo && nextChekerY === startChekerY + indTwo){
+            if(item.x === startChekerX + indOne && item.y === startChekerY + indOne) return item
          }
-         if(nextChekerX === startChekerX - 2 && nextChekerY === startChekerY + 2){
-            if(item.x === startChekerX - 1 && item.y === startChekerY + 1) return item
-         }
-      }
-
-      if(curentUser.chekerColor === checkerGrayColor)
-      {
-         if(nextChekerX === startChekerX - 2 && nextChekerY === startChekerY - 2){
-            if(item.x === startChekerX - 1 && item.y === startChekerY - 1) return item
-         }
-         if(nextChekerX === startChekerX + 2 && nextChekerY === startChekerY - 2){
-            if(item.x === startChekerX + 1 && item.y === startChekerY - 1) return item
+         if(nextChekerX === startChekerX - indTwo && nextChekerY === startChekerY + indTwo){
+            if(item.x === startChekerX - indOne && item.y === startChekerY + indOne) return item
          }
       }
-   })
 
-   if(vragCell){
-      if (vragCell.cheker.userId === userId || !vragCell.cheker.isExist) return
-      
-      brokenСheckers.push(JSON.parse(JSON.stringify(vragCell)))
-      const nextElement = document.getElementById(nextCellId)
-      const startElement = document.getElementById(startCellId)
-      const vragElement = document.getElementById(vragCell.id)
-      const elUserHistory = document.getElementsByName('gameHistory')
-      const historyText = elUserHistory[0].childNodes[0]
-      const nextElementCheker = document.createElement('div')
-      const startElementCheker = startElement.firstChild
-      const vragElementCheker = vragElement.firstChild
+      if(curentUser.chekerColor === checkerGrayColor){
+         if(nextChekerX === startChekerX - indTwo && nextChekerY === startChekerY - indTwo){
+            if(item.x === startChekerX - indOne && item.y === startChekerY - indOne) return item
+         }
+         if(nextChekerX === startChekerX + indTwo && nextChekerY === startChekerY - indTwo){
+            if(item.x === startChekerX + indOne && item.y === startChekerY - indOne) return item
+         }
+      }
+   }))
 
-      nextElementCheker.classList.add('cheker')
-      nextElementCheker.style.backgroundColor = curentUser.chekerColor
-      startElement.style.backgroundColor = blackColor
-
-      startElement.removeChild(startElementCheker)
-      vragElement.removeChild(vragElementCheker)
-      nextElement.appendChild(nextElementCheker)
-
-      nextCell.cheker.isSelected = true
-      startCell.cheker.isSelected = false
-      startCell.cheker.isExist = false
-      nextCell.cheker.isExist = true
-      vragCell.cheker.isExist = false
-      nextCell.cheker.colorCheker = curentUser.chekerColor
-
-      nextCell.cheker.userId = userId
-      startCell.cheker.userId = null
-      vragCell.cheker.userId = null
-
-      history(curentUser.userId, curentUser.userName, startCellId, nextCellId)
-      historyText.innerText = `${curentUserHistor(curentUser)}`
-     
-      vragCell = null
-      cellInMemory = null
-      console.log('brokenChekers', brokenСheckers)
+   if(vrag && (vragCells.length < 2) ){
+      vragCells.push(vrag)
+      if( (nextChekerX === startChekerX + 4 && nextChekerY === startChekerY + 4) ||
+          (nextChekerX === startChekerX - 4 && nextChekerY === startChekerY + 4) )
+      {
+         vragCellSearch(1,4)
+      }
+      if( (nextChekerX === startChekerX - 4 && nextChekerY === startChekerY - 4) ||
+          (nextChekerX === startChekerX + 4 && nextChekerY === startChekerY - 4) )
+      {
+         vragCellSearch(1,4)
+      }
    }
+    
+} 
+   
+   vragCellSearch(1,2)
+   vragCellSearch(3,4)
+   
+   if(vragCells.length){
+      
+      let [vragCell, vragTwo] = vragCells
+      
+      const brokenChec = (vrag) => {
+         if (vrag.cheker.userId === userId || !vrag.cheker.isExist) return
+          
+         const vragBroken = JSON.parse(JSON.stringify(vragCells))
+         vragBroken.forEach( item => item['numberBroken'] = gameHistory.length+1)
+         vrag !== vragTwo && brokenСheckers.push(vragBroken)
+
+         const nextElement = document.getElementById(nextCellId)
+         const startElement = document.getElementById(startCellId)
+         const vragElement = document.getElementById(vrag.id)
+         const elUserHistory = document.getElementsByName('gameHistory')
+         const historyText = elUserHistory[0].childNodes[0]
+         const nextElementCheker = document.createElement('div')
+         const startElementCheker = startElement.firstChild
+         const vragElementCheker = vragElement.firstChild
+
+         nextElementCheker.classList.add('cheker')
+         nextElementCheker.style.backgroundColor = curentUser.chekerColor
+         startElement.style.backgroundColor = blackColor
+
+         if(startElementCheker){
+            startElement.removeChild(startElementCheker)
+         }
+         
+         
+         vragElement.removeChild(vragElementCheker)
+         
+         if(!nextElement.firstChild)
+         {
+            nextElement.appendChild(nextElementCheker)
+         }
+         
+
+         nextCell.cheker.isSelected = true
+         startCell.cheker.isSelected = false
+         startCell.cheker.isExist = false
+         nextCell.cheker.isExist = true
+         vrag.cheker.isExist = false
+         vrag.cheker.colorCheker = null
+         nextCell.cheker.colorCheker = curentUser.chekerColor
+
+         nextCell.cheker.userId = userId
+         startCell.cheker.userId = null
+         vrag.cheker.userId = null
+
+         vrag !== vragTwo && history(curentUser.userId, curentUser.userName, startCellId, nextCellId)
+         
+         historyText.innerText = `${curentUserHistor(curentUser)}`
+         
+         if(vragTwo && vragCells.length){
+            brokenChec(vragTwo)
+         }
+         
+         vrag = null
+         cellInMemory = null
+      }
+      brokenChec(vragCell)
+   }
+   
 }
 
 function checkingCorrectMove (startCell, nextCell) {
@@ -183,7 +228,6 @@ function checkingCorrectMove (startCell, nextCell) {
    }
 
    if(colorCheker === checkerRedColor) {
-      //console.log(startCell)
       if ( (nextChekerY - startChekerY) > 1 || (nextChekerY - startChekerY) < 0) return true
       if ( (startChekerX - nextChekerX) > 1 || (nextChekerX - startChekerX) > 1 ) return true
    }
@@ -206,7 +250,7 @@ function cellClick(id) {
    const divCheker = selectedElement.childNodes[0]
    const boardInArr = genBoard.flat()
    const curentUser = curetnUser()
-
+   
    const selectedСell = boardInArr.find( (selectedElement) => {
       return selectedElement.id === id
    } )
@@ -223,16 +267,13 @@ function cellClick(id) {
             return
          } 
          curentElemenId = cellInMemory.id
-         console.log(curentElemenId)
+         
          cellInMemory.cheker.isSelected = true
          selectedElement.style.backgroundColor = checkerYellowBg
-         console.log('cellInMemory', cellInMemory)
       } 
    }
 
-   
-
-   if(cellInMemory && divCheker) {
+    if(cellInMemory && divCheker) {
       elementInMemory.style.backgroundColor = blackColor
       selectCheker()
       selectedElement.style.backgroundColor = blackColor
@@ -246,6 +287,7 @@ function cellClick(id) {
    }   
 
    else if (selectedСell.isDisable && cellInMemory) {
+     
       if(cellInMemory.cheker.isSelected && !divCheker) {   
          
          attackCheker(cellInMemory, selectedСell, boardInArr)
@@ -275,6 +317,7 @@ function cellClick(id) {
              elementInMemory.removeChild(childElementInMemory)
 
              cellInMemory = null
+             vragCells.length = 0 && vragCells.length
         
              giveNewUserId()
 
@@ -428,7 +471,6 @@ function renderButton(){
    button.classList.add('button')
    button.setAttribute('id', 'btn')
    button.setAttribute('onclick', 'cancelMove(genBoard)')
-   //button.setAttribute('tupe', 'button')
    button.innerText = 'Отмена'
 
    historyLine.appendChild(button)
@@ -438,13 +480,13 @@ function cancelMove(){
    if(!gameHistory.length) return
    let {idStartCell: idStart, idFinishCell: idFinish, userId: curentUserid} =  gameHistory.pop()
    const board = genBoard.flat()
-   let lastBrokenCheker = brokenСheckers.pop()
-
+   
+              
    const startCellOption = board.find( ({id}) => id === idStart )
    const finishCellOption = board.find( ({id}) => id === idFinish )
    let startCell = document.getElementById(idStart)
    let finishCell = document.getElementById(idFinish)
-   //let lastBrokenCell = document.getElementById(lastBrokenCheker.id)
+  
    let historyText = document.getElementsByName('historyText')
    const userLine = document.getElementsByClassName('curentUser')
 
@@ -462,9 +504,37 @@ function cancelMove(){
    if(firstClildNod){
       finishCell.removeChild(firstClildNod)
    } 
-  
+   
    startCell.appendChild(checker)
    
+   if(brokenСheckers.length > 0 ) {
+      let [lastBrok, lastBrokTwo] = brokenСheckers[brokenСheckers.length - 1] 
+      console.log('lastBrokTwo',lastBrokTwo)
+
+      const cancelBroken = (lastBroken) => {
+
+         if(lastBroken && lastBroken.numberBroken === gameHistory.length+1){
+            const lastBrokenCell = document.getElementById(lastBroken.id)
+            const brokenCheker = document.createElement('div')
+            brokenCheker.style.backgroundColor = lastBroken.cheker.colorCheker
+            brokenCheker.classList.add('cheker')
+      
+            lastBrokenOption = board.find( ({id}) => id === lastBroken.id )
+            lastBrokenOption.cheker.isExist = true
+            lastBrokenOption.cheker.userId = lastBroken.cheker.userId
+            
+            lastBrokenCell.appendChild(brokenCheker)
+            brokenСheckers.pop()
+         }
+   
+      }
+      
+      cancelBroken(lastBrok)
+      
+      if(lastBrokTwo) {
+         cancelBroken(lastBrokTwo)
+      }
+   }
    userLine[0].innerText = curetnUser().userName
    historyText[0].innerText = `${curentUserHistor()}`
 }
